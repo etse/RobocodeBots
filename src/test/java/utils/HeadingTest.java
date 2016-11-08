@@ -1,9 +1,10 @@
-package steffen.utils;
+package utils;
 
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import steffen.utils.Heading;
 
 import static org.junit.Assert.assertNotEquals;
 

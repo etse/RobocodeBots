@@ -1,12 +1,11 @@
 package steffen;
 
-import robocode.*;
-import steffen.utils.Heading;
+import robocode.AdvancedRobot;
+import robocode.ScannedRobotEvent;
+import robocode.WinEvent;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-
-import static robocode.util.Utils.normalRelativeAngleDegrees;
 
 public class PredictionBot extends AdvancedRobot {
     public void run() {
@@ -26,7 +25,7 @@ public class PredictionBot extends AdvancedRobot {
     }
 
     public void onScannedRobot(ScannedRobotEvent e) {
-        e.g
+
     }
 
     public void onWin(WinEvent e) {
