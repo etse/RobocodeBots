@@ -6,3 +6,4 @@
 .gradletasknamecache
 .gradle/
 build/
+out/
