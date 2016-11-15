@@ -2,6 +2,8 @@ package steffen;
 
 import robocode.*;
 import robocode.util.Utils;
+import steffen.movement.CirclingMovementStrategy;
+import steffen.movement.MovementStrategy;
 import steffen.utils.Heading;
 import steffen.utils.ScannedEnemy;
 import steffen.utils.Vector2D;
@@ -10,14 +12,13 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 public class PredictionBot extends AdvancedRobot {
-    ScannedEnemy scannedEnemy;
-    double driveDirection = 1;
-    double distanceFromWall = 100;
-    double optimalDistance = 300;
+    public ScannedEnemy scannedEnemy;
+    MovementStrategy movementStrategy = new CirclingMovementStrategy(this);;
 
     public void run() {
-        setColors(Color.magenta, Color.cyan, Color.black);
+        setColors(Color.red, Color.yellow, Color.white);
         setBulletColor(Color.yellow);
+
         setAdjustRadarForGunTurn(true);
         setAdjustGunForRobotTurn(true);
     }
@@ -33,10 +34,6 @@ public class PredictionBot extends AdvancedRobot {
         Vector2D enemyPosition = myPosition.add(distanceVector);
 
         scannedEnemy = new ScannedEnemy(getTime(), enemyPosition, velocity);
-
-        if(!isCloseToWall()) {
-            setDrivingDirection(e);
-        }
     }
 
     public void onStatus(StatusEvent e) {
@@ -60,8 +57,8 @@ public class PredictionBot extends AdvancedRobot {
         } else {
             setTurnRadarRight(45);
         }
-        avoidHittingWalls();
-        setAhead(100 * driveDirection);
+
+        movementStrategy.handleMovement(e, scannedEnemy);
         execute();
     }
 
@@ -115,82 +112,6 @@ public class PredictionBot extends AdvancedRobot {
         }
 
         return expectedFirePosition;
-    }
-
-    private boolean isCloseToWall() {
-        double x = getX(), y = getY();
-        return (x < distanceFromWall || x > getBattleFieldWidth() - distanceFromWall || y < distanceFromWall || y > getBattleFieldHeight() - distanceFromWall);
-    }
-
-    private void setDrivingDirection(ScannedRobotEvent e) {
-        boolean tooClose = optimalDistance > e.getDistance();
-
-        double turnForNormalToRobot = e.getBearing() - 90;
-        double turnToFixDistance = 5 * driveDirection * (tooClose ? -1 : 1);
-
-        setTurnRight((turnForNormalToRobot + turnToFixDistance*3) / 4);
-    }
-
-    private void avoidHittingWalls() {
-        double x = getX(), y=getY();
-        double turnStrength = 45;
-        boolean shouldChangeDriveDirection = false;
-        Heading heading = Heading.getHeadingForAngle(driveDirection == 1 ? getHeading() : getHeading() + 180);
-
-        if(x < distanceFromWall) {
-            if(heading == Heading.NORTH_WEST || heading == Heading.NORTH) {
-                setTurnRight(turnStrength);
-            }
-            if(heading == Heading.SOUTH_WEST || heading == Heading.SOUTH) {
-                setTurnLeft(turnStrength);
-            }
-            if(heading == Heading.WEST) {
-                shouldChangeDriveDirection = true;
-            }
-        }
-
-        if(x > getBattleFieldWidth() - distanceFromWall) {
-            if(heading == Heading.NORTH_EAST || heading == Heading.NORTH) {
-                setTurnLeft(turnStrength);
-            }
-            if(heading == Heading.SOUTH_EAST || heading == Heading.SOUTH) {
-                setTurnRight(turnStrength);
-            }
-            if(heading == Heading.EAST) {
-                shouldChangeDriveDirection = true;
-            }
-        }
-        if(y < distanceFromWall) {
-            if(heading == Heading.SOUTH_WEST || heading == Heading.WEST) {
-                setTurnRight(turnStrength);
-            }
-            if(heading == Heading.SOUTH_EAST || heading == Heading.EAST) {
-                setTurnLeft(turnStrength);
-            }
-            if(heading == Heading.SOUTH) {
-                shouldChangeDriveDirection = true;
-            }
-        }
-
-        if(y > getBattleFieldHeight() - distanceFromWall) {
-            if(heading == Heading.NORTH_WEST || heading == Heading.WEST) {
-                setTurnLeft(turnStrength);
-            }
-            if(heading == Heading.NORTH_EAST || heading == Heading.EAST) {
-                setTurnRight(turnStrength);
-            }
-            if(heading == Heading.NORTH) {
-                shouldChangeDriveDirection = true;
-            }
-        }
-
-        if (shouldChangeDriveDirection) {
-            driveDirection = -driveDirection;
-        }
-    }
-
-    public void onHitRobot(HitRobotEvent e) {
-        driveDirection = -driveDirection;
     }
 
     public void onPaint(Graphics2D graphics) {
