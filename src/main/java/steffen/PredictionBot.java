@@ -50,12 +50,6 @@ public class PredictionBot extends AdvancedRobot {
         scanningStrategy.onStatusUpdate(e, scannedEnemy);
         shootingStrategy.onStatusUpdate(e, scannedEnemy);
         movementStrategy.onStatusUpdate(e, scannedEnemy);
-
-        if(getTime() % 200 < 150) {
-            movementStrategy = circlingMovementStrategy;
-        } else {
-            movementStrategy = crazyMovementStrategy;
-        }
     }
 
     public void onHitRobot(HitRobotEvent e) {
