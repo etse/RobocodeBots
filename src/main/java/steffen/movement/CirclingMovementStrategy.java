@@ -1,6 +1,7 @@
 package steffen.movement;
 
 import robocode.AdvancedRobot;
+import robocode.HitRobotEvent;
 import robocode.StatusEvent;
 import robocode.util.Utils;
 import steffen.utils.Heading;
@@ -17,14 +18,18 @@ public class CirclingMovementStrategy extends MovementStrategy {
     }
 
     @Override
-    public void handleMovement(StatusEvent statusEvent, ScannedEnemy enemy) {
-
+    public void onStatusUpdate(StatusEvent statusEvent, ScannedEnemy enemy) {
         if (isCloseToWall() || enemy == null) {
             avoidHittingWalls();
         } else {
             setDrivingDirection(statusEvent, enemy);
         }
         robot.setAhead(100 * driveDirection);
+    }
+
+    @Override
+    public void onHitRobot(HitRobotEvent event) {
+        driveDirection = -driveDirection;
     }
 
     private boolean isCloseToWall() {
@@ -43,10 +48,7 @@ public class CirclingMovementStrategy extends MovementStrategy {
         double turnForNormalToRobot = Utils.normalRelativeAngleDegrees(bearing - 90);
         double turnToFixDistance = 5 * driveDirection * (tooClose ? -1 : 1);
 
-        robot.setDebugProperty("bearing", String.format("%f", bearing));
-        robot.setDebugProperty("turnRight", String.format("%f", turnForNormalToRobot));
-
-        robot.setTurnLeft((turnForNormalToRobot + turnToFixDistance*3) / 4);
+        robot.setTurnRight((turnForNormalToRobot + turnToFixDistance*3) / 4);
     }
 
     private void avoidHittingWalls() {

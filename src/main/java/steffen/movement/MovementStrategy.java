@@ -1,6 +1,7 @@
 package steffen.movement;
 
 import robocode.AdvancedRobot;
+import robocode.HitRobotEvent;
 import robocode.StatusEvent;
 import steffen.utils.ScannedEnemy;
 
@@ -11,5 +12,7 @@ public abstract class MovementStrategy {
         this.robot = robot;
     }
 
-    public abstract void handleMovement(StatusEvent statusEvent, ScannedEnemy scannedEnemy);
+    public abstract void onStatusUpdate(StatusEvent statusEvent, ScannedEnemy scannedEnemy);
+
+    public abstract void onHitRobot(HitRobotEvent event);
 }
